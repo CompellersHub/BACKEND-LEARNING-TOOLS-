@@ -1,0 +1,30 @@
+import { UploadService } from "../../global/services";
+import { Request } from "express";
+import { FilterQuery, PaginateResult } from "mongoose";
+import { caseStatsResponse, create, dashboardStatsResponse, findManyKycTrainingPortal, KycTrainingPortal, update } from "./interface";
+import { TrainerModel, TrainingDocument } from "./model";
+import { uploadFile } from "../../global/entities";
+export declare class KycTrainingPortalService {
+    private trainerModel;
+    private readonly uploadService;
+    private readonly UPLOAD_CONCURRENCY;
+    private readonly BATCH_DELAY_MS;
+    constructor(trainerModel: typeof TrainerModel, uploadService: UploadService);
+    create(body: create, request: Request): Promise<KycTrainingPortal>;
+    kycScheduleCreate(body: create, files: uploadFile[], caseId: string): Promise<void>;
+    findOne(query: FilterQuery<TrainingDocument>): Promise<KycTrainingPortal>;
+    findMany(query: findManyKycTrainingPortal): Promise<PaginateResult<KycTrainingPortal>>;
+    update(data: update, id: string): Promise<KycTrainingPortal>;
+    caseStats(): Promise<caseStatsResponse>;
+    dashboardStats(): Promise<dashboardStatsResponse>;
+    private findManyFilter;
+    private findOneFilter;
+    private joinName;
+    private readonly expectedFiles;
+    private createDocument;
+    private processRootLevelFiles;
+    private processPersonDocuments;
+    private processDocumentCategory;
+    private findAndCreateDocument;
+    private generateCaseId;
+}
