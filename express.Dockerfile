@@ -29,7 +29,7 @@ COPY . .
 ARG ENV_FILE_CONTENT
 ENV ENV_FILE_CONTENT=$ENV_FILE_CONTENT
 RUN echo "$ENV_FILE_CONTENT" > .env.production
-RUN if [ -d dist ];then rm -r dist; fi && npm run build
+RUN if [ -d dist ]; then rm -r dist; fi && npm run build
 
 # 3. Production image, copy all the files and run next
 FROM base AS runner
