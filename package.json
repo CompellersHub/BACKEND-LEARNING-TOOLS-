@@ -90,5 +90,10 @@
     "winston": "^3.17.0",
     "xml2js": "^0.6.2",
     "zod": "^4.1.11"
+  },
+  "ts-node": {
+    "ignore": [
+      "node_modules"
+    ]
   }
 }
