@@ -30,7 +30,6 @@ ARG ENV_FILE_CONTENT
 ENV ENV_FILE_CONTENT=$ENV_FILE_CONTENT
 RUN echo "$ENV_FILE_CONTENT" > .env.local
 RUN if [ -d dist ]; then rm -r dist; fi && npm run build
-RUN echo $(ls -1 dist)
 
 # 3. Production image, copy all the files and run next
 FROM base AS runner
