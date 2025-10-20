@@ -14,7 +14,7 @@ COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
-  elif [ -f package-lock.json ]; then npm install; \
+  elif [ -f package-lock.json ]; then npm ci; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
@@ -43,7 +43,7 @@ RUN adduser -S web -u 1001
 
 # Ensures we have permission to update /app directory
 RUN chown -R web:nodejs /app
-
+COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder --chown=web:nodejs /app/dist/* .
 COPY --from=builder --chown=web:nodejs /app/.env* .
 
