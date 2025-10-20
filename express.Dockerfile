@@ -28,9 +28,9 @@ COPY . .
 # Get .env during build 
 ARG ENV_FILE_CONTENT
 ENV ENV_FILE_CONTENT=$ENV_FILE_CONTENT
-RUN echo "$ENV_FILE_CONTENT" > .env.production
+RUN echo "$ENV_FILE_CONTENT" > .env.local
 RUN if [ -d dist ]; then rm -r dist; fi && npm run build
-RUN ls -1 dist/
+RUN echo $(ls -1 dist)
 
 # 3. Production image, copy all the files and run next
 FROM base AS runner
@@ -45,7 +45,7 @@ RUN adduser -S web -u 1001
 # Ensures we have permission to update /app directory
 RUN chown -R web:nodejs /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder --chown=web:nodejs /app/dist ./
+COPY --from=builder --chown=web:nodejs /app/dist/ ./
 COPY --from=builder --chown=web:nodejs /app/.env* .
 
 USER web
