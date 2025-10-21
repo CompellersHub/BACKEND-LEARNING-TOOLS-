@@ -22,37 +22,34 @@ RUN \
 # 2. Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+
+# Ensures we have permission to update /app directory
+RUN \
+  set -ex; \
+  addgroup -g 1001 -S nodejs; \
+  adduser -S web -u 1001; \
+  chown -R web:nodejs /app
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Get .env during build 
 ARG ENV_FILE_CONTENT
 ENV ENV_FILE_CONTENT=$ENV_FILE_CONTENT
-RUN echo "$ENV_FILE_CONTENT" > .env.local
-RUN if [ -d dist ]; then rm -r dist; fi && npm run build
-
-# 3. Production image, copy all the files and run next
-FROM base AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S web -u 1001
 
 
-# Ensures we have permission to update /app directory
-RUN chown -R web:nodejs /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder --chown=web:nodejs /app/dist/ ./
-COPY --from=builder --chown=web:nodejs /app/.env* .
+# Run build 
+RUN \
+  set -ex; \
+  echo "$ENV_FILE_CONTENT" > .env.local; \
+  if [ -d dist ]; then rm -r dist; fi; \
+  npm run build
+
 
 USER web
 
 ARG PORT=80
-
 EXPOSE $PORT
-
 ENV PORT=$PORT
 
-CMD HOSTNAME="0.0.0.0" node main.js
+CMD HOSTNAME="0.0.0.0" node dist/main.js
